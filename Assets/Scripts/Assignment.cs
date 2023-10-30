@@ -10,6 +10,7 @@ using UnityEngine;
 using System;
 using System.Text;
 using System.IO;
+using UnityEngine.UI;
 
 #region Assignment Instructions
 
@@ -132,7 +133,7 @@ static public class AssignmentPart1
 ////  This will enable the needed UI/function calls for your to proceed with your assignment.
 static public class AssignmentConfiguration
 {
-    public const int PartOfAssignmentThatIsInDevelopment = 1;
+    public const int PartOfAssignmentThatIsInDevelopment = 2;
 }
 
 ///*
@@ -170,16 +171,11 @@ static public class AssignmentConfiguration
 
 static public class AssignmentPart2
 {
-
     static List<string> listOfPartyNames;
 
     static public void GameStart()
     {
         listOfPartyNames = new List<string>();
-        listOfPartyNames.Add("sample 1");
-        listOfPartyNames.Add("sample 2");
-        listOfPartyNames.Add("sample 3");
-
         GameContent.RefreshUI();
     }
 
@@ -190,19 +186,82 @@ static public class AssignmentPart2
 
     static public void LoadPartyDropDownChanged(string selectedName)
     {
+        // Clear the existing party members before loading the new party.
+        GameContent.partyCharacters.Clear();
+
+        // Implement this function to load the selected party data.
+        // You can use the provided example to read the data from a file.
+        using (StreamReader sr = new StreamReader($"Assets/SavedChars/{selectedName}.txt"))
+        {
+            while (!sr.EndOfStream)
+            {
+                int classId = int.Parse(sr.ReadLine());
+                int health = int.Parse(sr.ReadLine());
+                int mana = int.Parse(sr.ReadLine());
+                int strength = int.Parse(sr.ReadLine());
+                int agility = int.Parse(sr.ReadLine());
+                int wisdom = int.Parse(sr.ReadLine());
+                // Add more properties as needed.
+
+                // Create a new PartyCharacter with all properties.
+                PartyCharacter pc = new PartyCharacter(classId, health, mana, strength, agility, wisdom);
+                GameContent.partyCharacters.AddLast(pc);
+            }
+        }
+
+        // Refresh the UI to display the new party members and remove the old ones.
         GameContent.RefreshUI();
     }
 
-    static public void SavePartyButtonPressed()
+    static public void SavePartyButtonPressed(string partyName)
     {
+        // Modify this function to save the party with the given name.
+        using (StreamWriter sw = new StreamWriter($"Assets/SavedChars/{partyName}.txt"))
+        {
+            // Write the party data to the file.
+            foreach (PartyCharacter pc in GameContent.partyCharacters)
+            {
+                sw.WriteLine(pc.classID);
+                sw.WriteLine(pc.health);
+                sw.WriteLine(pc.mana);
+                sw.WriteLine(pc.strength);
+                sw.WriteLine(pc.agility);
+                sw.WriteLine(pc.wisdom);
+                // Write other party data properties here.
+            }
+        }
+        // Update the list of party names.
+        listOfPartyNames.Add(partyName);
         GameContent.RefreshUI();
     }
 
-    static public void DeletePartyButtonPressed()
+
+    //static public void NewPartyButtonPressed(string partyName)
+    //{
+    //    // Add the new party name to the list.
+    //    listOfPartyNames.Add(partyName);
+    //    GameContent.RefreshUI();
+    //}
+
+    // Function to create a new party with the given party name
+    static public void CreateNewParty(string partyName)
     {
-        GameContent.RefreshUI();
+        // Initialize the list of party names if it's not already
+        if (listOfPartyNames == null)
+            listOfPartyNames = new List<string>();
+
+        // Add the new party name to the list
+        listOfPartyNames.Add(partyName);
     }
 
+    static public void DeletePartyButtonPressed(string partyName)
+    {
+        // Remove the selected party name from the list.
+        listOfPartyNames.Remove(partyName);
+        // Delete the corresponding file (optional).
+        File.Delete($"Assets/SavedChars/{partyName}.txt");
+        GameContent.RefreshUI();
+    }
 }
 
 #endregion

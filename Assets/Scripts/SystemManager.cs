@@ -201,21 +201,33 @@ public class SystemManager : MonoBehaviour
         AssignmentPart2.LoadPartyDropDownChanged(value);
     }
 
+    public void NewButtonPressed()
+    {
+        // Generate a unique party name using a random number
+        string partyName = "New Party " + UnityEngine.Random.Range(1, 10000).ToString();
+
+        // Call the function to create a new party in AssignmentPart2 (if implemented)
+        AssignmentPart2.CreateNewParty(partyName);
+
+        // Refresh the UI to update the list of party names
+        RefreshUI();
+    }
+
 
     public void SaveButton2Pressed()
     {
-        AssignmentPart2.SavePartyButtonPressed();
-    }
-
-    public void NewButtonPressed()
-    {
-        //AssignmentPart2.NewPartyButtonPressed();
+        string partyName = GetPartyNameFromInput(); // Get the party name from the input field
+        AssignmentPart2.SavePartyButtonPressed(partyName);
+        RefreshUI();
     }
 
     public void DeleteButtonPressed()
     {
-        AssignmentPart2.DeletePartyButtonPressed();
+        string partyName = GetPartyNameFromInput(); // Get the party name from the input field
+        AssignmentPart2.DeletePartyButtonPressed(partyName);
+        RefreshUI();
     }
+
 
     public string GetPartyNameFromInput()
     {
